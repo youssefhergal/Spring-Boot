@@ -1,4 +1,10 @@
 package org.youssefhergal.my_app_ws.services;
 
-public interface UserService {
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.youssefhergal.my_app_ws.shared.dto.UserDto;
+
+public interface UserService extends UserDetailsService {
+
+    UserDto createUser(UserDto userDto);
+
 }
