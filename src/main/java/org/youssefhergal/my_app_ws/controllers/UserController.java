@@ -2,6 +2,8 @@ package org.youssefhergal.my_app_ws.controllers;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.youssefhergal.my_app_ws.requests.UserRequest;
 import org.youssefhergal.my_app_ws.responses.UserResponse;
@@ -21,16 +23,18 @@ public class UserController {
     }
 
     @PostMapping
-    public UserResponse createUser(@RequestBody UserRequest userRequest){
+    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest) {
         UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(userRequest , userDto);
+        BeanUtils.copyProperties(userRequest, userDto);
 
         UserDto createdUser = userService.createUser(userDto);
-        UserResponse userResponse = new UserResponse();
-        BeanUtils.copyProperties(createdUser , userResponse);
 
-        return userResponse;
+        UserResponse userResponse = new UserResponse();
+        BeanUtils.copyProperties(createdUser, userResponse);
+
+        return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
     }
+
 
     @PutMapping
     public String updateUser(){

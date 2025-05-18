@@ -51,4 +51,15 @@ public class UserServiceImpl implements UserService {
                        userEntity.getEncryptedPassword(), 
                        new ArrayList<>());
     }
+
+    @Override
+    public UserDto getUser(String email){
+        UserEntity userEntity = userRepository.findByEmail(email);
+        if(userEntity == null){
+            throw new UsernameNotFoundException(email);
+        }
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(userEntity, userDto);
+        return userDto;
+    }
 }
