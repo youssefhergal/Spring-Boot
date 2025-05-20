@@ -1,28 +1,44 @@
 package org.youssefhergal.my_app_ws.controllers;
 
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.youssefhergal.my_app_ws.entities.UserEntity;
 import org.youssefhergal.my_app_ws.requests.UserRequest;
 import org.youssefhergal.my_app_ws.responses.UserResponse;
 import org.youssefhergal.my_app_ws.services.UserService;
 import org.youssefhergal.my_app_ws.shared.dto.UserDto;
 
 @RestController
-@RequestMapping("/users") //localhost:8080/users
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
-    UserService userService ;
+    UserService userService;
 
-    @GetMapping
-    public String getUser(){
-        return "Hello World get user was called ";
+    @GetMapping(
+            path = "/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    public ResponseEntity<UserResponse> getUser(@PathVariable String id) {
+        UserDto userDto = userService.getUserByUserId(id);
+
+        UserResponse userResponse = new UserResponse();
+
+        BeanUtils.copyProperties(userDto, userResponse);
+
+        return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping(
+            value = "/register",
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
     public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest) {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userRequest, userDto);
@@ -36,14 +52,30 @@ public class UserController {
     }
 
 
-    @PutMapping
-    public String updateUser(){
-        return "Hello World update user was called ";
+    @PutMapping(
+            path = "/{id}",
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    public ResponseEntity<UserResponse> updateUser(@PathVariable String id, @RequestBody UserRequest userRequest) {
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(userRequest, userDto);
+
+        UserDto updateUser = userService.updateUser(id, userDto);
+
+        UserResponse userResponse = new UserResponse();
+        BeanUtils.copyProperties(updateUser, userResponse);
+
+        return new ResponseEntity<>(userResponse, HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping
-    public String deleteUser(){
-        return "Hello World delete user was called ";
+    @DeleteMapping(
+            path = "/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    public ResponseEntity<Object> deleteUser(@PathVariable String id) {
+        userService.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

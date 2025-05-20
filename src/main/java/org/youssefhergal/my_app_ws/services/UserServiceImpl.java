@@ -47,19 +47,58 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null)
             throw new UsernameNotFoundException(email);
 
-        return new User(userEntity.getEmail(), 
-                       userEntity.getEncryptedPassword(), 
-                       new ArrayList<>());
+        return new User(userEntity.getEmail(),
+                userEntity.getEncryptedPassword(),
+                new ArrayList<>());
     }
 
     @Override
-    public UserDto getUser(String email){
+    public UserDto getUser(String email) {
         UserEntity userEntity = userRepository.findByEmail(email);
-        if(userEntity == null){
+        if (userEntity == null) {
             throw new UsernameNotFoundException(email);
         }
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userEntity, userDto);
         return userDto;
+    }
+
+    @Override
+    public UserDto getUserByUserId(String userId) {
+        UserEntity userEntity = userRepository.findByUserId(userId);
+
+        if (userEntity == null) throw new UsernameNotFoundException(userId);
+
+        UserDto userDto = new UserDto();
+
+        BeanUtils.copyProperties(userEntity, userDto);
+
+        return userDto;
+    }
+
+    @Override
+    public UserDto updateUser(String userId, UserDto userDto) {
+        UserEntity userEntity = userRepository.findByUserId(userId);
+
+        if (userEntity == null) throw new UsernameNotFoundException(userId);
+
+        userEntity.setFirstname(userDto.getFirstname());
+        userEntity.setLastname(userDto.getLastname());
+
+        userRepository.save(userEntity);
+
+        UserDto updatedUser = new UserDto();
+
+        BeanUtils.copyProperties(userEntity, updatedUser);
+
+        return updatedUser;
+    }
+
+    @Override
+    public void deleteUser(String userId) {
+        UserEntity userEntity = userRepository.findByUserId(userId);
+
+        if (userEntity == null) throw new UsernameNotFoundException(userId);
+        userRepository.delete(userEntity);
     }
 }

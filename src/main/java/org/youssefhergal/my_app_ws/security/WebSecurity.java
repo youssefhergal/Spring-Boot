@@ -13,8 +13,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.youssefhergal.my_app_ws.services.UserService;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -30,34 +34,35 @@ public class WebSecurity {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Configuration de l'AuthenticationManager
-        AuthenticationManagerBuilder authenticationManagerBuilder = 
-            http.getSharedObject(AuthenticationManagerBuilder.class);
-        
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+
         authenticationManagerBuilder
-            .userDetailsService(userService)
-            .passwordEncoder(bCryptPasswordEncoder);
-        
+                .userDetailsService(userService)
+                .passwordEncoder(bCryptPasswordEncoder);
+
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
         http.authenticationManager(authenticationManager);
 
         // Configuration du filtre d'authentification
         AuthentificationFilter authentificationFilter = new AuthentificationFilter(authenticationManager);
-        authentificationFilter.setFilterProcessesUrl(SecurityContants.LOGIN_URL);
+        authentificationFilter.setFilterProcessesUrl(SecurityConstants.LOGIN_URL);
 
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> {
-                auth
-                    .requestMatchers(HttpMethod.POST, SecurityContants.SIGN_UP_URL).permitAll()
-                    .requestMatchers(HttpMethod.POST, SecurityContants.LOGIN_URL).permitAll()
-                    .requestMatchers(HttpMethod.GET, "/users/login").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/users/register").permitAll()
-                    .anyRequest().authenticated();
-            })
-            .addFilter(authentificationFilter)
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> {
+                    auth
+                            .requestMatchers("/users").permitAll()
+                            .requestMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL).permitAll()
+                            .requestMatchers(HttpMethod.POST, SecurityConstants.LOGIN_URL).permitAll()
+                            .requestMatchers(HttpMethod.GET, SecurityConstants.SIGN_UP_URL).permitAll()
+                            .requestMatchers(HttpMethod.GET, SecurityConstants.LOGIN_URL).permitAll()
+                            .anyRequest().authenticated();
+                })
+                .addFilter(authentificationFilter)
+                .addFilter(new AuthorizationFilter(authenticationManager))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
@@ -72,4 +77,7 @@ public class WebSecurity {
                 .build();
         return new InMemoryUserDetailsManager(admin);
     }
+
+
+
 }
