@@ -1,5 +1,6 @@
 package org.youssefhergal.my_app_ws.controllers;
 
+import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +46,8 @@ public class UserController {
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
-    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest) {
-        if (userRequest.getFirstname().isEmpty() ||
-                userRequest.getLastname().isEmpty() ||
-                userRequest.getEmail().isEmpty() ||
-                userRequest.getPassword().isEmpty())
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest userRequest) {
+        if (userRequest.getFirstname().isEmpty())
             throw new UserException(ErrorMessages.MISSING_REQUIRED_FIELDS.getMessage());
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userRequest, userDto);
