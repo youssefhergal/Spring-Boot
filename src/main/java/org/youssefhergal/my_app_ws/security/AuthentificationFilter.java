@@ -3,6 +3,7 @@ package org.youssefhergal.my_app_ws.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,23 +23,22 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class AuthentificationFilter extends UsernamePasswordAuthenticationFilter {
-    
-    private final AuthenticationManager authenticationManager;
 
+    private final AuthenticationManager authenticationManager;
 
 
     public AuthentificationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
         setFilterProcessesUrl(SecurityConstants.LOGIN_URL); // Définir l'URL de login
     }
-    
+
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) 
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
         try {
             UserLoginRequest creds = new ObjectMapper()
                     .readValue(request.getInputStream(), UserLoginRequest.class);
-            
+
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             creds.getEmail(),
@@ -50,26 +50,27 @@ public class AuthentificationFilter extends UsernamePasswordAuthenticationFilter
             throw new RuntimeException(e);
         }
     }
-    
+
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, 
-                                      HttpServletResponse response, 
-                                      FilterChain chain,
-                                      Authentication authResult) {
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain chain,
+                                            Authentication authResult) {
         String userName = ((User) authResult.getPrincipal()).getUsername();
-        
+
         String token = Jwts.builder()
                 .setSubject(userName)
                 .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS512 , SecurityConstants.TOKEN_SECRET)
+                .signWith(Keys.hmacShaKeyFor(SecurityConstants.TOKEN_SECRET), SignatureAlgorithm.HS512)
                 .compact();
 
         UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl");
 
         UserDto userDto = userService.getUser(userName);
-        
+
         response.addHeader(SecurityConstants.HEADER_STRING,
                 SecurityConstants.TOKEN_PREFIX + token);
         response.addHeader("user_id", userDto.getUserId());
-}
+
+    }
 }

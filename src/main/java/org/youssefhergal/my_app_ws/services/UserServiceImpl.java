@@ -2,6 +2,8 @@ package org.youssefhergal.my_app_ws.services;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +15,7 @@ import org.youssefhergal.my_app_ws.shared.dto.UserDto;
 import org.youssefhergal.my_app_ws.shared.dto.Utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -100,5 +103,25 @@ public class UserServiceImpl implements UserService {
 
         if (userEntity == null) throw new UsernameNotFoundException(userId);
         userRepository.delete(userEntity);
+    }
+
+    @Override
+    public List<UserDto> getAllUsers(int page, int limit) {
+
+        if (page > 0) page -= 1;
+
+        List<UserDto> userDtos = new ArrayList<>();
+        Pageable pageable = Pageable.ofSize(limit).withPage(page);
+
+        Page<UserEntity> usersPage = userRepository.findAll(pageable);
+
+        List<UserEntity> users = usersPage.getContent();
+
+        for (UserEntity user : users) {
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(user, userDto);
+            userDtos.add(userDto);
+        }
+        return userDtos;
     }
 }

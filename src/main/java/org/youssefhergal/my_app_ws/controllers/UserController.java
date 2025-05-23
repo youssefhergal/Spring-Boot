@@ -15,6 +15,9 @@ import org.youssefhergal.my_app_ws.responses.UserResponse;
 import org.youssefhergal.my_app_ws.services.UserService;
 import org.youssefhergal.my_app_ws.shared.dto.UserDto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -85,5 +88,19 @@ public class UserController {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping
+    public List<UserResponse> getAllUsers(@RequestParam(value = "page", defaultValue = "1") int page, @RequestParam(value = "limit", defaultValue = "3") int limit) {
+        List<UserResponse> userResponse = new ArrayList<>();
+
+        List<UserDto> users = userService.getAllUsers(page, limit);
+        for (UserDto user : users) {
+            UserResponse userResponse1 = new UserResponse();
+            BeanUtils.copyProperties(user, userResponse1);
+            userResponse.add(userResponse1);
+        }
+        return userResponse;
+    }
+
 
 }

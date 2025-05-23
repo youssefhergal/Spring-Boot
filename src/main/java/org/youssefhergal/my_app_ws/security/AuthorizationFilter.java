@@ -14,6 +14,13 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import java.io.IOException;
 import java.util.ArrayList;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import javax.crypto.KeyGenerator;
+import java.security.Key;
+import java.util.Base64;
+
+
 public class AuthorizationFilter extends BasicAuthenticationFilter {
     public AuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
@@ -23,8 +30,23 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
         super(authenticationManager, authenticationEntryPoint);
     }
 
+    private static Key getKey() {
+        Key key = null;
+        try {
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+            SecureRandom secureRandom = SecureRandom.getInstanceStrong();
+            keyGenerator.init(secureRandom);
+            key = keyGenerator.generateKey();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return key;
+    }
+
+    public static final String TOKEN_SECRET = Base64.getEncoder().encodeToString(getKey().getEncoded());
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) 
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         String header = request.getHeader(SecurityConstants.HEADER_STRING);
 
