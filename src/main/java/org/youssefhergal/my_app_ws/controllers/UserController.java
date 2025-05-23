@@ -8,7 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.youssefhergal.my_app_ws.entities.UserEntity;
+import org.youssefhergal.my_app_ws.exceptions.UserException;
 import org.youssefhergal.my_app_ws.requests.UserRequest;
+import org.youssefhergal.my_app_ws.responses.ErrorMessages;
 import org.youssefhergal.my_app_ws.responses.UserResponse;
 import org.youssefhergal.my_app_ws.services.UserService;
 import org.youssefhergal.my_app_ws.shared.dto.UserDto;
@@ -25,6 +27,7 @@ public class UserController {
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     public ResponseEntity<UserResponse> getUser(@PathVariable String id) {
+
         UserDto userDto = userService.getUserByUserId(id);
 
         UserResponse userResponse = new UserResponse();
@@ -40,6 +43,11 @@ public class UserController {
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest) {
+        if (userRequest.getFirstname().isEmpty() ||
+                userRequest.getLastname().isEmpty() ||
+                userRequest.getEmail().isEmpty() ||
+                userRequest.getPassword().isEmpty())
+            throw new UserException(ErrorMessages.MISSING_REQUIRED_FIELDS.getMessage());
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userRequest, userDto);
 
