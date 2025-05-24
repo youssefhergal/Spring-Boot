@@ -1,6 +1,8 @@
 package org.youssefhergal.my_app_ws.shared.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDto implements Serializable {
 
@@ -13,7 +15,18 @@ public class UserDto implements Serializable {
     private String password;
     private String encryptedPassword;
     private String emailVerificationToken;
-    private String emailVerificationStatus ;
+    private Boolean emailVerificationStatus = false;
+    private List<AddressDto> addresses;
+    private ContactDto contact;
+
+    public ContactDto getContact() {
+        return contact;
+    }
+
+
+    public void setContact(ContactDto contact) {
+        this.contact = contact;
+    }
 
     public String getUserId() {
         return userId;
@@ -71,11 +84,29 @@ public class UserDto implements Serializable {
         this.emailVerificationToken = emailVerificationToken;
     }
 
-    public String getEmailVerificationStatus() {
+    public Boolean getEmailVerificationStatus() {
         return emailVerificationStatus;
     }
 
-    public void setEmailVerificationStatus(String emailVerificationStatus) {
+    public void setEmailVerificationStatus(Boolean emailVerificationStatus) {
         this.emailVerificationStatus = emailVerificationStatus;
     }
+
+    public List<AddressDto> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressDto> addresses) {
+        this.addresses = addresses;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+
 }

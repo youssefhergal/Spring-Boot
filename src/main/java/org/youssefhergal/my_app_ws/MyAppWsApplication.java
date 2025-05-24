@@ -1,5 +1,6 @@
 package org.youssefhergal.my_app_ws;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +22,6 @@ public class MyAppWsApplication {
     public SpringApplicationContext springApplicationContext() {
         return new SpringApplicationContext();
     }
-
 
 
 }

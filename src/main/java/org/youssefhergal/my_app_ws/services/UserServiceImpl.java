@@ -1,5 +1,6 @@
 package org.youssefhergal.my_app_ws.services;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,8 +10,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.youssefhergal.my_app_ws.entities.AddressEntity;
+import org.youssefhergal.my_app_ws.entities.ContactEntity;
 import org.youssefhergal.my_app_ws.entities.UserEntity;
 import org.youssefhergal.my_app_ws.repositories.UserRepository;
+import org.youssefhergal.my_app_ws.shared.dto.AddressDto;
+import org.youssefhergal.my_app_ws.shared.dto.ContactDto;
 import org.youssefhergal.my_app_ws.shared.dto.UserDto;
 import org.youssefhergal.my_app_ws.shared.dto.Utils;
 
@@ -28,19 +33,47 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto user) {
-        UserEntity checkuser = userRepository.findByEmail(user.getEmail());
-        if (checkuser != null) throw new RuntimeException("User already exists");
+        // Vérifier si l'utilisateur existe déjà
+        UserEntity checkUser = userRepository.findByEmail(user.getEmail());
+        if (checkUser != null) throw new RuntimeException("User Already Exists!");
 
-        UserEntity userEntity = new UserEntity();
-        BeanUtils.copyProperties(user, userEntity);
+        ModelMapper modelMapper = new ModelMapper();
+
+        // Configuration du ModelMapper pour ignorer les IDs des entités
+        modelMapper.createTypeMap(AddressDto.class, AddressEntity.class)
+                .addMappings(mapper -> mapper.skip(AddressEntity::setId));
+        modelMapper.createTypeMap(ContactDto.class, ContactEntity.class)
+                .addMappings(mapper -> mapper.skip(ContactEntity::setId));
+
+        // Mapper le DTO vers l'entité
+        UserEntity userEntity = modelMapper.map(user, UserEntity.class);
+
+        // Configurer les informations de base de l'utilisateur
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userEntity.setUserId(Utils.generateUID(20, true, true));
+        userEntity.setUserId(Utils.generateUID(30, false, false));
 
+        // Gérer explicitement le contact
+        if (userEntity.getContact() != null) {
+            ContactEntity contactEntity = userEntity.getContact();
+            contactEntity.setContactId(Utils.generateUID(30, true, true));
+            contactEntity.setUser(userEntity);
+            userEntity.setContact(contactEntity);
+        }
+
+
+        // Configurer les adresses
+        if (userEntity.getAddresses() != null) {
+            for (AddressEntity address : userEntity.getAddresses()) {
+                address.setUser(userEntity);
+                address.setAddressId(Utils.generateUID(30, true, true));
+            }
+        }
+
+        // Sauvegarder l'utilisateur
         UserEntity newUser = userRepository.save(userEntity);
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(newUser, userDto);
 
-        return userDto;
+        // Mapper l'entité sauvegardée vers DTO
+        return modelMapper.map(newUser, UserDto.class);
     }
 
     @Override
@@ -73,7 +106,6 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) throw new UsernameNotFoundException(userId);
 
         UserDto userDto = new UserDto();
-
         BeanUtils.copyProperties(userEntity, userDto);
 
         return userDto;

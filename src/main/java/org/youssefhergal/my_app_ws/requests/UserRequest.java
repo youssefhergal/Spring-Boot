@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 public class UserRequest {
 
     @NotBlank(message = "First name cannot be null")
@@ -16,6 +18,8 @@ public class UserRequest {
     @NotBlank(message = "Password cannot be null")
     @Size(min = 5, message = "Password must be at least 8 characters")
     private String password;
+
+    private List<AddressRequest> addresses;
 
     public String getLastname() {
         return lastname;
@@ -47,5 +51,13 @@ public class UserRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<AddressRequest> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressRequest> addresses) {
+        this.addresses = addresses;
     }
 }

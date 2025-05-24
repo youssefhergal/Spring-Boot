@@ -2,6 +2,7 @@ package org.youssefhergal.my_app_ws.controllers;
 
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,13 +50,14 @@ public class UserController {
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest userRequest) {
         if (userRequest.getFirstname().isEmpty())
             throw new UserException(ErrorMessages.MISSING_REQUIRED_FIELDS.getMessage());
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(userRequest, userDto);
+
+        // Use ModelMapper for proper address mapping
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto userDto = modelMapper.map(userRequest, UserDto.class);
 
         UserDto createdUser = userService.createUser(userDto);
 
-        UserResponse userResponse = new UserResponse();
-        BeanUtils.copyProperties(createdUser, userResponse);
+        UserResponse userResponse = modelMapper.map(createdUser, UserResponse.class);
 
         return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
     }
@@ -67,13 +69,16 @@ public class UserController {
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     public ResponseEntity<UserResponse> updateUser(@PathVariable String id, @RequestBody UserRequest userRequest) {
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(userRequest, userDto);
+//      UserDto userDto = new UserDto();
+//      BeanUtils.copyProperties(userRequest, userDto);
+
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto userDto = modelMapper.map(userRequest, UserDto.class);
 
         UserDto updateUser = userService.updateUser(id, userDto);
 
-        UserResponse userResponse = new UserResponse();
-        BeanUtils.copyProperties(updateUser, userResponse);
+        UserResponse userResponse = modelMapper.map(updateUser, UserResponse.class);
+
 
         return new ResponseEntity<>(userResponse, HttpStatus.ACCEPTED);
     }

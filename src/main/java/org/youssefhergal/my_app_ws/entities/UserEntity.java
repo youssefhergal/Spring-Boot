@@ -3,6 +3,7 @@ package org.youssefhergal.my_app_ws.entities;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity(name = "users")
 public class UserEntity implements Serializable {
@@ -13,26 +14,32 @@ public class UserEntity implements Serializable {
     private Long id;
 
 
-    @Column(nullable = false )
+    @Column(nullable = false)
     private String userId;
 
-    @Column(nullable = false , length = 50)
+    @Column(nullable = false, length = 50)
     private String firstname;
 
-    @Column(nullable = false , length = 50)
+    @Column(nullable = false, length = 50)
     private String lastname;
 
-    @Column(nullable = false , unique = true, length = 50)
+    @Column(nullable = false, unique = true, length = 50)
     private String email;
 
-    @Column(nullable = false )
+    @Column(nullable = false)
     private String encryptedPassword;
 
-    @Column(nullable = true )
+    @Column(nullable = true)
     private String emailVerificationToken;
 
-    @Column(nullable = false )
-    private Boolean emailVerificationStatus = false ;
+    @Column(nullable = false)
+    private Boolean emailVerificationStatus = false;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<AddressEntity> addresses;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private ContactEntity contact;
 
     public void setId(Long id) {
         this.id = id;
@@ -96,5 +103,21 @@ public class UserEntity implements Serializable {
 
     public Long getId() {
         return id;
+    }
+
+    public List<AddressEntity> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressEntity> addresses) {
+        this.addresses = addresses;
+    }
+
+    public ContactEntity getContact() {
+        return contact;
+    }
+
+    public void setContact(ContactEntity contact) {
+        this.contact = contact;
     }
 }
