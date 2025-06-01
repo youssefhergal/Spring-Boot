@@ -19,4 +19,5 @@ public interface UserService extends UserDetailsService {
 
     List<UserDto> getAllUsers(int page, int limit);
 
+    List<UserDto> getAllUsers(int page, int limit, String search);
 }

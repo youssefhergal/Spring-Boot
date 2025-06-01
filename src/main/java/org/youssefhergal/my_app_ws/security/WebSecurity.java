@@ -52,11 +52,9 @@ public class WebSecurity {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
                     auth
-                            .requestMatchers("/users").permitAll()
                             .requestMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL).permitAll()
                             .requestMatchers(HttpMethod.POST, SecurityConstants.LOGIN_URL).permitAll()
-                            .requestMatchers(HttpMethod.GET, SecurityConstants.SIGN_UP_URL).permitAll()
-                            .requestMatchers(HttpMethod.GET, SecurityConstants.LOGIN_URL).permitAll()
+                            .requestMatchers(HttpMethod.GET, "/users").permitAll()
                             .anyRequest().authenticated();
                 })
                 .addFilter(authentificationFilter)

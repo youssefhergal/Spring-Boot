@@ -2,15 +2,15 @@ package org.youssefhergal.my_app_ws.requests;
 
 public class ContactRequest {
 
-    private String number;
+    private String mobile;
     private String skype;
 
-    public String getNumber() {
-        return number;
+    public String getMobile() {
+        return mobile;
     }
 
-    public void setNumber(String number) {
-        this.number = number;
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getSkype() {

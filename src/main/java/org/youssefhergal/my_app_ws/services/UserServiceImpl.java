@@ -138,6 +138,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserDto> getAllUsers(int page, int limit, String search) {
+
+        if (page > 0) page -= 1;
+
+        List<UserDto> userDtos = new ArrayList<>();
+        Pageable pageable = Pageable.ofSize(limit).withPage(page);
+
+        Page<UserEntity> usersPage;
+        if (search != null && !search.isEmpty()) {
+            usersPage = userRepository.findAll(pageable, search);
+        } else {
+            usersPage = userRepository.findAll(pageable);
+        }
+
+        List<UserEntity> users = usersPage.getContent();
+
+        for (UserEntity user : users) {
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(user, userDto);
+            userDtos.add(userDto);
+        }
+        return userDtos;
+    }
+
+    @Override
     public List<UserDto> getAllUsers(int page, int limit) {
 
         if (page > 0) page -= 1;
@@ -146,7 +171,6 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = Pageable.ofSize(limit).withPage(page);
 
         Page<UserEntity> usersPage = userRepository.findAll(pageable);
-
         List<UserEntity> users = usersPage.getContent();
 
         for (UserEntity user : users) {

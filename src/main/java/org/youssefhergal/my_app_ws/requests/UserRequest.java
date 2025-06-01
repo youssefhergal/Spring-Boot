@@ -21,6 +21,16 @@ public class UserRequest {
 
     private List<AddressRequest> addresses;
 
+    private ContactRequest contact;
+
+    public ContactRequest getContact() {
+        return contact;
+    }
+
+    public void setContact(ContactRequest contact) {
+        this.contact = contact;
+    }
+
     public String getLastname() {
         return lastname;
     }

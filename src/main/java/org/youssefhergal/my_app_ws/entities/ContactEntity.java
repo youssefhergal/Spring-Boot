@@ -17,7 +17,7 @@ public class ContactEntity implements Serializable {
     @Column(length = 30)
     private String contactId;
 
-    @NotBlank(message = "Number cannot be null")
+    @NotBlank(message = "Mobile cannot be null")
     private String mobile;
     private String skype;
 

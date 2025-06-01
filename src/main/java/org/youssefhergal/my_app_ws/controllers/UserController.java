@@ -93,10 +93,20 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponse> getAllUsers(@RequestParam(value = "page", defaultValue = "1") int page, @RequestParam(value = "limit", defaultValue = "3") int limit) {
+    public List<UserResponse> getAllUsers(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "limit", defaultValue = "3") int limit,
+            @RequestParam(value = "search", required = false) String search) {
+
         List<UserResponse> userResponse = new ArrayList<>();
 
-        List<UserDto> users = userService.getAllUsers(page, limit);
+        List<UserDto> users;
+        if (search != null && !search.trim().isEmpty()) {
+            users = userService.getAllUsers(page, limit, search.trim());
+        } else {
+            users = userService.getAllUsers(page, limit);
+        }
+
         for (UserDto user : users) {
             UserResponse userResponse1 = new UserResponse();
             BeanUtils.copyProperties(user, userResponse1);

@@ -5,7 +5,7 @@ public class AddressResponse {
     private String addressId;
     private String city;
     private String country;
-    private String streetName;
+    private String street;
     private String postalCode;
     private String type;
 
@@ -33,12 +33,12 @@ public class AddressResponse {
         this.country = country;
     }
 
-    public String getStreetName() {
-        return streetName;
+    public String getStreet() {
+        return street;
     }
 
-    public void setStreetName(String streetName) {
-        this.streetName = streetName;
+    public void setStreet(String street) {
+        this.street = street;
     }
 
     public String getPostalCode() {
