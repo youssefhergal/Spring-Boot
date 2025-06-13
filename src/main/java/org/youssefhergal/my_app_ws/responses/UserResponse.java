@@ -11,6 +11,8 @@ public class UserResponse {
     private List<AddressResponse> addresses;
     private ContactResponse contact;
 
+    private boolean admin;
+
     public String getUserId() {
         return userId;
     }
@@ -58,5 +60,13 @@ public class UserResponse {
 
     public void setContact(ContactResponse contact) {
         this.contact = contact;
+    }
+
+    public Boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        this.admin = admin;
     }
 }

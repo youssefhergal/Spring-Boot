@@ -19,6 +19,8 @@ public class UserDto implements Serializable {
     private List<AddressDto> addresses;
     private ContactDto contact;
 
+    private Boolean admin;
+
     public ContactDto getContact() {
         return contact;
     }
@@ -108,5 +110,11 @@ public class UserDto implements Serializable {
         this.id = id;
     }
 
+    public Boolean isAdmin() {
+        return admin;
+    }
 
+    public void setAdmin(Boolean admin) {
+        this.admin = admin;
+    }
 }

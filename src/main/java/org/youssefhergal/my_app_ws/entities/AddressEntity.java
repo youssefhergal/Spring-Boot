@@ -1,7 +1,6 @@
 package org.youssefhergal.my_app_ws.entities;
 
 import jakarta.persistence.*;
-import org.youssefhergal.my_app_ws.shared.dto.UserDto;
 
 import java.io.Serializable;
 
@@ -17,7 +16,7 @@ public class AddressEntity implements Serializable {
     private String city;
     @Column(nullable = false, length = 20)
     private String country;
-    @Column(nullable = false, length = 50)
+    @Column(name = "street", nullable = false, length = 50)
     private String street;
     @Column(nullable = false, length = 7)
     private String postalCode;
@@ -64,8 +63,8 @@ public class AddressEntity implements Serializable {
         return street;
     }
 
-    public void setStreet(String street) {
-        this.street = street;
+    public void setStreet(String streetName) {
+        this.street = streetName;
     }
 
     public String getPostalCode() {

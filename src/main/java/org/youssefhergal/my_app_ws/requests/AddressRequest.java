@@ -11,7 +11,7 @@ public class AddressRequest {
     private String country;
 
     @NotBlank(message = "Street cannot be null")
-    private String streetName;
+    private String street;
 
     @NotBlank(message = "Postal code cannot be null")
     private String postalCode;
@@ -35,12 +35,12 @@ public class AddressRequest {
         this.country = country;
     }
 
-    public String getStreetName() {
-        return streetName;
+    public String getStreet() {
+        return street;
     }
 
-    public void setStreetName(String streetName) {
-        this.streetName = streetName;
+    public void setStreet(String street) {
+        this.street = street;
     }
 
     public String getPostalCode() {

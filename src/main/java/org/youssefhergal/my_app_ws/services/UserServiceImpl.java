@@ -39,9 +39,12 @@ public class UserServiceImpl implements UserService {
 
         ModelMapper modelMapper = new ModelMapper();
 
-        // Configuration du ModelMapper pour ignorer les IDs des entités
+        // Configuration du ModelMapper pour ignorer les IDs des entités et mapper les champs
         modelMapper.createTypeMap(AddressDto.class, AddressEntity.class)
-                .addMappings(mapper -> mapper.skip(AddressEntity::setId));
+                .addMappings(mapper -> {
+                    mapper.skip(AddressEntity::setId);
+                    mapper.map(AddressDto::getStreet, AddressEntity::setStreet);
+                });
         modelMapper.createTypeMap(ContactDto.class, ContactEntity.class)
                 .addMappings(mapper -> mapper.skip(ContactEntity::setId));
 

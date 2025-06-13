@@ -55,22 +55,26 @@ public class AuthentificationFilter extends UsernamePasswordAuthenticationFilter
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response,
                                             FilterChain chain,
-                                            Authentication authResult) {
+                                            Authentication authResult) throws IOException {
         String userName = ((User) authResult.getPrincipal()).getUsername();
-
-        String token = Jwts.builder()
-                .setSubject(userName)
-                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
-                .signWith(Keys.hmacShaKeyFor(SecurityConstants.TOKEN_SECRET), SignatureAlgorithm.HS512)
-                .compact();
 
         UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl");
 
         UserDto userDto = userService.getUser(userName);
 
+        String token = Jwts.builder()
+                .setSubject(userName)
+                .claim("id", userDto.getUserId())
+                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
+                .signWith(Keys.hmacShaKeyFor(SecurityConstants.TOKEN_SECRET), SignatureAlgorithm.HS512)
+                .compact();
+
+
         response.addHeader(SecurityConstants.HEADER_STRING,
                 SecurityConstants.TOKEN_PREFIX + token);
         response.addHeader("user_id", userDto.getUserId());
+
+        response.getWriter().write("{\"token\": \"" + token + "\", \"id\": \"" + userDto.getUserId() + "\"}");
 
     }
 }

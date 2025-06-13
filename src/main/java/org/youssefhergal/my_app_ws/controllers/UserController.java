@@ -1,7 +1,6 @@
 package org.youssefhergal.my_app_ws.controllers;
 
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.youssefhergal.my_app_ws.entities.UserEntity;
 import org.youssefhergal.my_app_ws.exceptions.UserException;
+import org.youssefhergal.my_app_ws.requests.AddressRequest;
 import org.youssefhergal.my_app_ws.requests.UserRequest;
 import org.youssefhergal.my_app_ws.responses.ErrorMessages;
 import org.youssefhergal.my_app_ws.responses.UserResponse;
 import org.youssefhergal.my_app_ws.services.UserService;
+import org.youssefhergal.my_app_ws.shared.dto.AddressDto;
 import org.youssefhergal.my_app_ws.shared.dto.UserDto;
 
 import java.util.ArrayList;
@@ -26,6 +26,16 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    private ModelMapper getConfiguredModelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+
+        // Configure mapping from AddressRequest.street to AddressDto.streetName
+        modelMapper.createTypeMap(AddressRequest.class, AddressDto.class)
+                .addMappings(mapper -> mapper.map(AddressRequest::getStreet, AddressDto::setStreet));
+
+        return modelMapper;
+    }
 
     @GetMapping(
             path = "/{id}",
@@ -52,7 +62,7 @@ public class UserController {
             throw new UserException(ErrorMessages.MISSING_REQUIRED_FIELDS.getMessage());
 
         // Use ModelMapper for proper address mapping
-        ModelMapper modelMapper = new ModelMapper();
+        ModelMapper modelMapper = getConfiguredModelMapper();
         UserDto userDto = modelMapper.map(userRequest, UserDto.class);
 
         UserDto createdUser = userService.createUser(userDto);
@@ -72,7 +82,7 @@ public class UserController {
 //      UserDto userDto = new UserDto();
 //      BeanUtils.copyProperties(userRequest, userDto);
 
-        ModelMapper modelMapper = new ModelMapper();
+        ModelMapper modelMapper = getConfiguredModelMapper();
         UserDto userDto = modelMapper.map(userRequest, UserDto.class);
 
         UserDto updateUser = userService.updateUser(id, userDto);

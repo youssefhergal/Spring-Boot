@@ -19,6 +19,8 @@ public class UserRequest {
     @Size(min = 5, message = "Password must be at least 8 characters")
     private String password;
 
+    private Boolean admin;
+
     private List<AddressRequest> addresses;
 
     private ContactRequest contact;
@@ -69,5 +71,13 @@ public class UserRequest {
 
     public void setAddresses(List<AddressRequest> addresses) {
         this.addresses = addresses;
+    }
+
+    public Boolean getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        this.admin = admin;
     }
 }

@@ -29,6 +29,10 @@ public class UserEntity implements Serializable {
     private String email;
 
     @Column(nullable = false)
+    private Boolean admin = false;
+
+
+    @Column(nullable = false)
     private String encryptedPassword;
 
     @Column(nullable = true)
@@ -43,7 +47,7 @@ public class UserEntity implements Serializable {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private ContactEntity contact;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "users")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users", cascade = CascadeType.ALL)
     private Set<GroupEntity> groups = new HashSet<>();
 
     public void setId(Long id) {
@@ -132,5 +136,13 @@ public class UserEntity implements Serializable {
 
     public void setGroups(Set<GroupEntity> groups) {
         this.groups = groups;
+    }
+
+    public Boolean getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        this.admin = admin;
     }
 }
